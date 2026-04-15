@@ -17,6 +17,7 @@
   --max: 1240px;
   --mono: "JetBrains Mono", monospace;
   --sans: "IBM Plex Sans", sans-serif;
+  --sans-cjk: "Noto Sans SC", "IBM Plex Sans", sans-serif;
 }
 
 * {
@@ -63,7 +64,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   padding: 14px 18px;
   background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -101,6 +102,45 @@ body::before {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 18px;
+}
+
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switch {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(8, 47, 73, 0.06);
+  border: 1px solid rgba(8, 47, 73, 0.08);
+}
+
+.lang-button {
+  min-width: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
+}
+
+.lang-button:hover,
+.lang-button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.lang-button.is-active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 6px 14px rgba(8, 47, 73, 0.08);
 }
 
 .topnav a,
@@ -185,8 +225,9 @@ section {
 }
 
 .hero h1 {
-  max-width: 11ch;
-  font-size: clamp(3.2rem, 7vw, 6.4rem);
+  max-width: 12.6ch;
+  font-size: clamp(3rem, 6.6vw, 6rem);
+  line-height: 0.98;
 }
 
 .lede,
@@ -653,6 +694,11 @@ section {
     gap: 10px;
   }
 
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .hero,
   .capabilities,
   .release-loop,
@@ -662,7 +708,9 @@ section {
   }
 
   .hero h1 {
-    max-width: none;
+    max-width: 10ch;
+    font-size: clamp(2.85rem, 14vw, 4.9rem);
+    line-height: 1.02;
   }
 
   .terminal-window {
@@ -687,4 +735,21 @@ section {
     opacity: 1;
     transform: none;
   }
+}
+
+html[lang="zh-CN"] body {
+  font-family: var(--sans-cjk);
+}
+
+html[lang="zh-CN"] .hero h1 {
+  max-width: 9.5ch;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+html[lang="zh-CN"] .eyebrow,
+html[lang="zh-CN"] .story-step,
+html[lang="zh-CN"] .panel-label,
+html[lang="zh-CN"] .proof-label {
+  letter-spacing: 0.08em;
 }

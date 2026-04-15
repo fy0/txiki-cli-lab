@@ -3,48 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>txiki-cli-lab ? tiny runtime, loud ideas</title>
+  <title>txiki-cli-lab — tiny runtime, loud ideas</title>
   <meta name="description" content="A GitHub Pages promo site for txiki-cli-lab: a tiny txiki.js CLI playground that ships cross-platform binaries and runs JS, TS, WASM, and local HTTP demos.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="page-shell">
     <header class="topbar">
-      <a class="brand" href="#hero" aria-label="txiki-cli-lab home">
+      <a class="brand" href="#hero" data-i18n-aria-label="brand.ariaLabel">
         <span class="brand-mark">t</span>
         <span class="brand-text">txiki-cli-lab</span>
       </a>
-      <nav class="topnav" aria-label="Primary">
-        <a href="#story">Why it exists</a>
-        <a href="#capabilities">What it runs</a>
-        <a href="#release-loop">Release loop</a>
-        <a href="#commands">Command deck</a>
+      <nav class="topnav" aria-label="Primary" data-i18n-aria-label="nav.ariaLabel">
+        <a href="#story" data-i18n="nav.story"></a>
+        <a href="#capabilities" data-i18n="nav.capabilities"></a>
+        <a href="#release-loop" data-i18n="nav.release"></a>
+        <a href="#commands" data-i18n="nav.commands"></a>
       </nav>
-      <a class="topbar-cta" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer">Open repo</a>
+      <div class="topbar-actions">
+        <div class="lang-switch" role="group" aria-label="Language switch">
+          <button class="lang-button is-active" type="button" data-lang="en">EN</button>
+          <button class="lang-button" type="button" data-lang="zh">中</button>
+        </div>
+        <a class="topbar-cta" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer" data-i18n="nav.repo"></a>
+      </div>
     </header>
 
     <main>
       <section class="hero reveal" id="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Tiny runtime. Release-first attitude.</p>
-          <h1>Ship a CLI playground that feels small, fast, and strangely powerful.</h1>
-          <p class="lede">
-            txiki-cli-lab is a compact txiki.js experiment that compiles into cross-platform binaries,
-            refreshes a rolling dev release on every push, and still gives you room to run JavaScript,
-            TypeScript, WASM, and tiny HTTP demos from one executable.
-          </p>
+          <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+          <h1 data-i18n="hero.title"></h1>
+          <p class="lede" data-i18n="hero.lede"></p>
           <div class="hero-actions">
-            <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer">Browse releases</a>
-            <a class="button button-secondary" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer">Explore examples</a>
+            <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer" data-i18n="hero.primaryCta"></a>
+            <a class="button button-secondary" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer" data-i18n="hero.secondaryCta"></a>
           </div>
-          <ul class="hero-facts" aria-label="Project highlights">
-            <li><strong>3</strong><span>release targets</span></li>
-            <li><strong>1</strong><span>rolling dev tag</span></li>
-            <li><strong>JS ? TS ? WASM ? HTTP</strong><span>playground modes</span></li>
+          <ul class="hero-facts" aria-label="Project highlights" data-i18n-aria-label="hero.factsAriaLabel">
+            <li><strong data-i18n="hero.facts.targets.value"></strong><span data-i18n="hero.facts.targets.label"></span></li>
+            <li><strong data-i18n="hero.facts.dev.value"></strong><span data-i18n="hero.facts.dev.label"></span></li>
+            <li><strong data-i18n="hero.facts.modes.value"></strong><span data-i18n="hero.facts.modes.label"></span></li>
           </ul>
         </div>
 
@@ -55,80 +57,61 @@
               <span></span><span></span><span></span>
               <p>release-dev.log</p>
             </div>
-            <div class="terminal-body">
-              <p><span class="prompt">$</span> txiki-cli-lab run-http examples/http-state.ts 0 demo-mode</p>
-              <p class="terminal-ok">Listening on http://127.0.0.1:3017/</p>
-              <p><span class="prompt">$</span> txiki-cli-lab run examples/hello.ts demo mode</p>
-              <p>{</p>
-              <p>&nbsp;&nbsp;"message": "hello from TypeScript",</p>
-              <p>&nbsp;&nbsp;"args": ["demo", "mode"]</p>
-              <p>}</p>
-              <p><span class="prompt">$</span> txiki-cli-lab run-wasm examples/answer.wasm</p>
-              <p class="terminal-accent">42</p>
-            </div>
+            <div class="terminal-body" data-terminal="hero"></div>
           </div>
           <div class="floating-proof proof-left">
-            <span>main push</span>
-            <strong>refreshes dev</strong>
+            <span data-i18n="hero.proofLeft.label"></span>
+            <strong data-i18n="hero.proofLeft.value"></strong>
           </div>
           <div class="floating-proof proof-right">
-            <span>smoke tests</span>
-            <strong>guard the binary</strong>
+            <span data-i18n="hero.proofRight.label"></span>
+            <strong data-i18n="hero.proofRight.value"></strong>
           </div>
         </div>
       </section>
 
       <section class="story-grid reveal" id="story">
         <article class="story-card">
-          <p class="story-step">Chapter 01</p>
-          <h2>CLI experiments usually die in folders.</h2>
-          <p>
-            A pile of scripts, a runtime that only works on your machine, and release notes that exist only in your head.
-            txiki-cli-lab turns that mess into a repeatable shipping loop.
-          </p>
+          <p class="story-step" data-i18n="story.one.step"></p>
+          <h2 data-i18n="story.one.title"></h2>
+          <p data-i18n="story.one.body"></p>
         </article>
         <article class="story-card emphasis-card">
-          <p class="story-step">Chapter 02</p>
-          <h2>Every push becomes evidence.</h2>
-          <p>
-            The project builds Linux x64, Linux arm64, and Windows x64 binaries, updates a shared dev release,
-            and keeps a versioned path for tagged drops. Less ceremony, more proof.
-          </p>
+          <p class="story-step" data-i18n="story.two.step"></p>
+          <h2 data-i18n="story.two.title"></h2>
+          <p data-i18n="story.two.body"></p>
         </article>
         <article class="story-card">
-          <p class="story-step">Chapter 03</p>
-          <h2>Play with scripts without abandoning binaries.</h2>
-          <p>
-            Run local JS, on-demand TypeScript, tiny WASM modules, and local HTTP demos from the same tool.
-            It feels like a release candidate and a toybox at the same time.
-          </p>
+          <p class="story-step" data-i18n="story.three.step"></p>
+          <h2 data-i18n="story.three.title"></h2>
+          <p data-i18n="story.three.body"></p>
         </article>
       </section>
 
       <section class="capabilities reveal" id="capabilities">
         <div class="section-heading">
-          <p class="eyebrow">What it runs</p>
-          <h2>A tiny launcher with multiple personalities.</h2>
+          <p class="eyebrow" data-i18n="capabilities.eyebrow"></p>
+          <h2 data-i18n="capabilities.title"></h2>
         </div>
         <div class="capability-grid">
           <article class="capability-card accent-sky">
-            <h3>JavaScript first</h3>
-            <p>Run local .js and .mjs modules directly, with an injected runtime context for quick experiments.</p>
+            <h3 data-i18n="capabilities.cards.js.title"></h3>
+            <p data-i18n="capabilities.cards.js.body"></p>
             <code>txiki-cli-lab run examples/echo-context.js</code>
           </article>
           <article class="capability-card accent-sand">
-            <h3>TypeScript when available</h3>
-            <p>Use esbuild from PATH to transpile .ts and .mts on demand. If it is missing, the binary tells you exactly what to do.</p>
+            <h3 data-i18n="capabilities.cards.ts.title"></h3>
+            <p data-i18n="capabilities.cards.ts.body"></p>
             <code>txiki-cli-lab run examples/hello.ts demo mode</code>
           </article>
           <article class="capability-card accent-orange">
-            <h3>WASM with no theatrics</h3>
-            <p>Load a .wasm module directly or orchestrate it from JS. Great for proving tiny native-ish ideas without a full app shell.</p>
+            <h3 data-i18n="capabilities.cards.wasm.title"></h3>
+            <p data-i18n="capabilities.cards.wasm.body"></p>
             <code>txiki-cli-lab run-wasm examples/answer.wasm</code>
           </article>
           <article class="capability-card accent-ink">
-            <h3>Local HTTP demos</h3>
-            <p>Turn a script into a small web endpoint with one command. Useful for promo pages, fixtures, and tiny web toy servers.</p>
+            <h3 data-i18n="capabilities.cards.http.title"></h3>
+            <p data-i18n="capabilities.cards.http.body"></p>
             <code>txiki-cli-lab run-http examples/http-hello.js 3000</code>
           </article>
         </div>
@@ -136,105 +119,90 @@
 
       <section class="release-loop reveal" id="release-loop">
         <div class="section-heading compact">
-          <p class="eyebrow">Release loop</p>
-          <h2>One repo, two speeds.</h2>
+          <p class="eyebrow" data-i18n="release.eyebrow"></p>
+          <h2 data-i18n="release.title"></h2>
         </div>
         <div class="timeline">
           <article>
             <span class="timeline-index">01</span>
-            <h3>Push to main</h3>
-            <p>Builds all targets, uploads workflow artifacts, and refreshes a shared <code>dev</code> prerelease tag.</p>
+            <h3 data-i18n="release.steps.main.title"></h3>
+            <p data-i18n="release.steps.main.body"></p>
           </article>
           <article>
             <span class="timeline-index">02</span>
-            <h3>Tag a version</h3>
-            <p>Uses the same build path, but promotes assets into a clean versioned release for keeps.</p>
+            <h3 data-i18n="release.steps.tag.title"></h3>
+            <p data-i18n="release.steps.tag.body"></p>
           </article>
           <article>
             <span class="timeline-index">03</span>
-            <h3>Ship proof, not promises</h3>
-            <p>The smoke suite validates command behavior before artifacts leave the workflow.</p>
+            <h3 data-i18n="release.steps.proof.title"></h3>
+            <p data-i18n="release.steps.proof.body"></p>
           </article>
         </div>
       </section>
 
       <section class="command-deck reveal" id="commands">
         <div class="section-heading compact">
-          <p class="eyebrow">Command deck</p>
-          <h2>Pick a lane. The binary already knows the drill.</h2>
+          <p class="eyebrow" data-i18n="commands.eyebrow"></p>
+          <h2 data-i18n="commands.title"></h2>
         </div>
         <div class="command-layout">
-          <div class="command-tabs" role="tablist" aria-label="Command samples">
+          <div class="command-tabs" role="tablist" aria-label="Command samples" data-i18n-aria-label="commands.tabAriaLabel">
             <button class="command-tab is-active" type="button" role="tab" aria-selected="true" data-panel="panel-run">run</button>
             <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-http">run-http</button>
             <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-wasm">run-wasm</button>
-            <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-release">release</button>
+            <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-release" data-i18n="commands.tabs.release"></button>
           </div>
           <div class="command-panels">
             <article class="command-panel is-active" id="panel-run" role="tabpanel">
-              <p class="panel-label">On-demand playground script</p>
-              <pre><code>txiki-cli-lab run examples/hello.ts demo mode
-{
-  "message": "hello from TypeScript",
-  "args": ["demo", "mode"]
-}</code></pre>
-              <button class="copy-button" type="button" data-copy="txiki-cli-lab run examples/hello.ts demo mode">Copy command</button>
+              <p class="panel-label" data-i18n="commands.panels.run.label"></p>
+              <pre><code data-i18n="commands.panels.run.code"></code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run examples/hello.ts demo mode" data-i18n="commands.copy"></button>
             </article>
             <article class="command-panel" id="panel-http" role="tabpanel" hidden>
-              <p class="panel-label">Tiny local web route</p>
-              <pre><code>txiki-cli-lab run-http examples/http-state.ts 0 demo-mode
-Listening on http://127.0.0.1:3017/
-{"command":"run-http","path":"/","args":["demo-mode"]}</code></pre>
-              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-http examples/http-state.ts 0 demo-mode">Copy command</button>
+              <p class="panel-label" data-i18n="commands.panels.http.label"></p>
+              <pre><code data-i18n="commands.panels.http.code"></code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-http examples/http-state.ts 0 demo-mode" data-i18n="commands.copy"></button>
             </article>
             <article class="command-panel" id="panel-wasm" role="tabpanel" hidden>
-              <p class="panel-label">Minimal wasm roundtrip</p>
-              <pre><code>txiki-cli-lab run-wasm examples/answer.wasm
-42</code></pre>
-              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-wasm examples/answer.wasm">Copy command</button>
+              <p class="panel-label" data-i18n="commands.panels.wasm.label"></p>
+              <pre><code data-i18n="commands.panels.wasm.code"></code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-wasm examples/answer.wasm" data-i18n="commands.copy"></button>
             </article>
             <article class="command-panel" id="panel-release" role="tabpanel" hidden>
-              <p class="panel-label">Release evidence</p>
-              <pre><code>push -> main
-  ? build linux-x64 / linux-arm64 / windows-x64
-  ? update shared dev release
-
-push -> v0.1.0
-  ? build same matrix
-  ? publish versioned GitHub Release</code></pre>
-              <button class="copy-button" type="button" data-copy="git push origin main">Copy command</button>
+              <p class="panel-label" data-i18n="commands.panels.release.label"></p>
+              <pre><code data-i18n="commands.panels.release.code"></code></pre>
+              <button class="copy-button" type="button" data-copy="git push origin main" data-i18n="commands.copy"></button>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="proof-strip reveal" aria-label="Credibility markers">
+      <section class="proof-strip reveal" data-i18n-aria-label="proof.ariaLabel">
         <div>
-          <span class="proof-label">Packaging</span>
-          <strong>Linux x64 ? Linux arm64 ? Windows x64</strong>
+          <span class="proof-label" data-i18n="proof.packaging.label"></span>
+          <strong data-i18n="proof.packaging.value"></strong>
         </div>
         <div>
-          <span class="proof-label">Runtime</span>
-          <strong>txiki.js + JS + TS + WASM + local HTTP</strong>
+          <span class="proof-label" data-i18n="proof.runtime.label"></span>
+          <strong data-i18n="proof.runtime.value"></strong>
         </div>
         <div>
-          <span class="proof-label">Workflow</span>
-          <strong>Rolling dev release + tag releases</strong>
+          <span class="proof-label" data-i18n="proof.workflow.label"></span>
+          <strong data-i18n="proof.workflow.value"></strong>
         </div>
       </section>
 
       <section class="final-cta reveal" id="cta">
         <div class="section-heading compact light">
-          <p class="eyebrow">Ready to poke it?</p>
-          <h2>Open the repo, grab a build, then make it do something weird.</h2>
-          <p>
-            The page is static. The binary is not. Start with the examples, then mutate the runtime in public.
-          </p>
+          <p class="eyebrow" data-i18n="cta.eyebrow"></p>
+          <h2 data-i18n="cta.title"></h2>
+          <p data-i18n="cta.body"></p>
         </div>
         <div class="hero-actions centered">
-          <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer">GitHub repository</a>
-          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer">Releases</a>
-          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer">Examples index</a>
+          <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer" data-i18n="cta.repo"></a>
+          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer" data-i18n="cta.releases"></a>
+          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer" data-i18n="cta.examples"></a>
         </div>
       </section>
     </main>
