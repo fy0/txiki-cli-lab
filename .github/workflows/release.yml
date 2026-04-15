@@ -2,12 +2,19 @@ name: Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
 
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 env:
   APP_NAME: txiki-cli-lab
+  DEV_TAG: dev
   TJS_VERSION: v26.4.0
 
 jobs:
@@ -28,14 +35,16 @@ jobs:
       - name: Resolve release metadata
         shell: bash
         run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             version="${GITHUB_REF_NAME}"
+            archive_tag="${GITHUB_REF_NAME}"
           else
             version="dev-${GITHUB_SHA::7}"
+            archive_tag="${DEV_TAG}"
           fi
 
           echo "VERSION=${version}" >> "$GITHUB_ENV"
-          echo "ARCHIVE_NAME=${APP_NAME}-${version}-${{ matrix.target }}.tar.gz" >> "$GITHUB_ENV"
+          echo "ARCHIVE_NAME=${APP_NAME}-${archive_tag}-${{ matrix.target }}.tar.gz" >> "$GITHUB_ENV"
 
       - name: Install build dependencies
         shell: bash
@@ -107,14 +116,16 @@ jobs:
       - name: Resolve release metadata
         shell: pwsh
         run: |
-          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+          if ($env:GITHUB_REF -like 'refs/tags/*') {
             $version = $env:GITHUB_REF_NAME
+            $archiveTag = $env:GITHUB_REF_NAME
           } else {
             $version = "dev-$($env:GITHUB_SHA.Substring(0, 7))"
+            $archiveTag = $env:DEV_TAG
           }
 
           "VERSION=$version" >> $env:GITHUB_ENV
-          "ARCHIVE_NAME=$env:APP_NAME-$version-windows-x64.zip" >> $env:GITHUB_ENV
+          "ARCHIVE_NAME=$env:APP_NAME-$archiveTag-windows-x64.zip" >> $env:GITHUB_ENV
 
       - name: Download txiki.js
         shell: pwsh
@@ -185,9 +196,8 @@ jobs:
           path: dist/*.zip
 
   release:
-    name: Publish Release
+    name: Publish GitHub Release
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
     needs:
       - build-linux
       - build-windows
@@ -201,7 +211,40 @@ jobs:
           pattern: txiki-cli-lab-*
           merge-multiple: true
 
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
+      - name: Publish dev release
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          cat > release-notes.md <<EOF
+          Automated development build refreshed from the latest push.
+
+          - Branch: ${GITHUB_REF_NAME}
+          - Commit: ${GITHUB_SHA}
+          - Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          EOF
+
+          gh release delete "${DEV_TAG}" --cleanup-tag --yes >/dev/null 2>&1 || true
+          gh release create "${DEV_TAG}" dist/* \
+            --title "Development Build" \
+            --notes-file release-notes.md \
+            --prerelease \
+            --latest=false \
+            --target "${GITHUB_SHA}"
+
+      - name: Publish versioned release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" dist/* --clobber
+            gh release edit "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --latest
+          else
+            gh release create "${GITHUB_REF_NAME}" dist/* \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes \
+              --latest
+          fi

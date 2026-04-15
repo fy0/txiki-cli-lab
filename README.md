@@ -93,8 +93,9 @@ After building, run the repository smoke test with the runtime you used for the 
 
 ## GitHub Actions release flow
 
-- `push` tag `v*`: build all targets, upload workflow artifacts, publish GitHub Release assets
-- `workflow_dispatch`: build all targets and upload workflow artifacts only
+- `push` to `main`: build all targets, upload workflow artifacts, and refresh the shared `dev` prerelease tag
+- `push` tag `v*`: build all targets, upload workflow artifacts, and publish a versioned GitHub Release
+- `workflow_dispatch`: run the same pipeline manually for the selected ref
 
 Archives contain:
 - the compiled executable
