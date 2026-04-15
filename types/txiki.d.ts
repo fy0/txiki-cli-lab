@@ -24,8 +24,15 @@ declare global {
             readonly isDirectory: boolean;
         }
 
+        interface ServeOptions {
+            fetch: (request: Request) => Response | Promise<Response>;
+            port?: number;
+            listenIp?: string;
+        }
+
         function readFile(path: string): Promise<Uint8Array>;
         function stat(path: string): Promise<StatResult>;
+        function serve(options: ServeOptions): { readonly port: number; close(): void };
         function exit(code: number): never;
     }
 
@@ -41,9 +48,16 @@ declare global {
     interface ImportMeta {
         readonly path: string;
     }
+
+    interface TxikiCliLabContext {
+        readonly command: 'run';
+        readonly file: string;
+        readonly cwd: string;
+        readonly args: readonly string[];
+    }
+
+    var txikiCliLab: TxikiCliLabContext | undefined;
 }
-
-
 
 declare module 'tjs:path' {
     interface PathModule {
@@ -63,6 +77,18 @@ declare module 'tjs:hashing' {
     }
 
     export function createHash(type: 'sha256'): HashObj;
+}
+
+declare module 'tjs:wasi' {
+    export class WASI {
+        constructor(options: {
+            version: 'wasi_snapshot_preview1';
+            args?: string[];
+        });
+
+        getImportObject(): WebAssembly.Imports;
+        start(instance: WebAssembly.Instance): void;
+    }
 }
 
 export {};

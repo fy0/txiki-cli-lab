@@ -18,6 +18,8 @@ This repository intentionally stays small:
 txiki-cli-lab info
 txiki-cli-lab sha256 <file>
 txiki-cli-lab fetch <url>
+txiki-cli-lab run <file.js> [args...]
+txiki-cli-lab run-wasm <file.wasm> [args...]
 txiki-cli-lab --help
 txiki-cli-lab --version
 ```
@@ -28,9 +30,19 @@ txiki-cli-lab --version
 txiki-cli-lab info
 txiki-cli-lab sha256 fixtures/sample.txt
 txiki-cli-lab fetch http://127.0.0.1:8080/sample.txt
+txiki-cli-lab run fixtures/run-script.js alpha beta
+txiki-cli-lab run-wasm fixtures/answer.wasm
 ```
 
 ## Local development
+
+
+### Extra playground commands
+
+- `run <file.js> [args...]` executes a local `.js` or `.mjs` module.
+- The launched script can inspect `globalThis.txikiCliLab` for the injected command context.
+- `run-wasm <file.wasm> [args...]` runs a local wasm file.
+- Extra arguments are forwarded to WASI modules; simple exported `main()` wasm modules also work.
 
 The source is regular TypeScript, but the build uses txiki.js directly.
 No `package.json` is required.

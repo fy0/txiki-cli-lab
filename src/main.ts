@@ -2,6 +2,8 @@ import path from 'tjs:path';
 
 import { runFetchCommand } from './commands/fetch.ts';
 import { runInfoCommand } from './commands/info.ts';
+import { runScriptCommand } from './commands/run.ts';
+import { runWasmCommand } from './commands/run-wasm.ts';
 import { runSha256Command } from './commands/sha256.ts';
 import { APP_NAME, APP_VERSION } from './lib/constants.ts';
 import { CliError, formatErrorMessage } from './lib/errors.ts';
@@ -10,13 +12,15 @@ import { printJson } from './lib/output.ts';
 const HELP_TEXT = `Usage: ${APP_NAME} <command> [options]
 
 Commands:
-  info            Print runtime and host information as JSON
-  sha256 <file>   Print the SHA-256 digest for a file as JSON
-  fetch <url>     Fetch a URL and print a response summary as JSON
+  info                 Print runtime and host information as JSON
+  sha256 <file>        Print the SHA-256 digest for a file as JSON
+  fetch <url>          Fetch a URL and print a response summary as JSON
+  run <file.js>        Run a local .js/.mjs module with extra args
+  run-wasm <file.wasm> Run a local wasm module
 
 Options:
-  -h, --help      Show help
-  -v, --version   Show application version
+  -h, --help           Show help
+  -v, --version        Show application version
 `;
 
 function matchesPath(candidate: string, expected: string): boolean {
@@ -25,11 +29,6 @@ function matchesPath(candidate: string, expected: string): boolean {
     } catch {
         return candidate === expected;
     }
-}
-
-function looksLikeScriptPath(value: string): boolean {
-    const lower = value.toLowerCase();
-    return lower.endsWith('.js') || lower.endsWith('.mjs') || lower.endsWith('.cjs') || lower.endsWith('.ts');
 }
 
 function normalizeArgs(rawArgs: readonly string[], currentEntryPath: string): string[] {
@@ -45,13 +44,11 @@ function normalizeArgs(rawArgs: readonly string[], currentEntryPath: string): st
         args = args.slice(1);
     }
 
-    if (args[0] === 'run') {
+    if (args[0] === 'run' && args[1] && matchesPath(args[1], currentEntryPath)) {
         args = args.slice(1);
     }
 
     if (args[0] && matchesPath(args[0], currentEntryPath)) {
-        args = args.slice(1);
-    } else if (args[0] && looksLikeScriptPath(args[0])) {
         args = args.slice(1);
     }
 
@@ -81,6 +78,12 @@ async function main(): Promise<void> {
             return;
         case 'fetch':
             printJson(await runFetchCommand(rest));
+            return;
+        case 'run':
+            await runScriptCommand(rest);
+            return;
+        case 'run-wasm':
+            await runWasmCommand(rest);
             return;
         default:
             throw new CliError(2, `Unknown command: ${command}

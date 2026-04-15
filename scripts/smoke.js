@@ -1,15 +1,11 @@
 import path from 'tjs:path';
+
 function matchesPath(candidate, expected) {
     try {
         return path.resolve(candidate) === path.resolve(expected);
     } catch {
         return candidate === expected;
     }
-}
-
-function looksLikeScriptPath(value) {
-    const lower = value.toLowerCase();
-    return lower.endsWith('.js') || lower.endsWith('.mjs') || lower.endsWith('.cjs') || lower.endsWith('.ts');
 }
 
 function normalizeArgs(rawArgs, currentEntryPath) {
@@ -25,13 +21,11 @@ function normalizeArgs(rawArgs, currentEntryPath) {
         args = args.slice(1);
     }
 
-    if (args[0] === 'run') {
+    if (args[0] === 'run' && args[1] && matchesPath(args[1], currentEntryPath)) {
         args = args.slice(1);
     }
 
     if (args[0] && matchesPath(args[0], currentEntryPath)) {
-        args = args.slice(1);
-    } else if (args[0] && looksLikeScriptPath(args[0])) {
         args = args.slice(1);
     }
 
@@ -82,7 +76,6 @@ async function main() {
     }
 
     const binaryPath = path.resolve(tjs.cwd, binaryArg);
-    const fixturePath = path.resolve(tjs.cwd, 'fixtures', 'sample.txt');
     const fixtureArg = path.join('fixtures', 'sample.txt');
     const expectedDigest = new TextDecoder().decode(
         await tjs.readFile(path.resolve(tjs.cwd, 'fixtures', 'sample.sha256'))
@@ -129,6 +122,24 @@ async function main() {
         server.close();
     }
 
+    const scriptResult = await runProcess([
+        binaryPath,
+        'run',
+        path.join('fixtures', 'run-script.js'),
+        'alpha',
+        'beta',
+    ]);
+    assert(scriptResult.code === 0, `run command failed: ${scriptResult.stderr}`);
+    const scriptJson = JSON.parse(scriptResult.stdout);
+    assert(scriptJson.command === 'run', 'run script command mismatch');
+    assert(scriptJson.file === 'run-script.js', 'run script file mismatch');
+    assert(Array.isArray(scriptJson.args), 'run script args missing');
+    assert(scriptJson.args.join(',') === 'alpha,beta', 'run script args mismatch');
+
+    const wasmResult = await runProcess([ binaryPath, 'run-wasm', path.join('fixtures', 'answer.wasm') ]);
+    assert(wasmResult.code === 0, `run-wasm command failed: ${wasmResult.stderr}`);
+    assert(wasmResult.stdout.trim() === '42', 'run-wasm output mismatch');
+
     const missingFileResult = await runProcess([ binaryPath, 'sha256', 'does-not-exist.txt' ]);
     assert(missingFileResult.code !== 0, 'missing file should fail');
     assert(missingFileResult.stderr.includes('Failed to stat'), 'missing file error message mismatch');
@@ -136,6 +147,10 @@ async function main() {
     const invalidUrlResult = await runProcess([ binaryPath, 'fetch', 'not-a-url' ]);
     assert(invalidUrlResult.code !== 0, 'invalid URL should fail');
     assert(invalidUrlResult.stderr.includes('Invalid URL'), 'invalid URL error message mismatch');
+
+    const invalidScriptResult = await runProcess([ binaryPath, 'run', path.join('fixtures', 'sample.txt') ]);
+    assert(invalidScriptResult.code !== 0, 'invalid script type should fail');
+    assert(invalidScriptResult.stderr.includes('Unsupported script type'), 'invalid script error mismatch');
 
     console.log('smoke tests passed');
 }
