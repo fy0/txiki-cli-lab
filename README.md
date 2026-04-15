@@ -84,16 +84,16 @@ Build manually from PowerShell:
 
 ```powershell
 $env:APP_VERSION = '0.0.0-dev'
-$txiki = (Resolve-Path '.\.txiki.js	xiki-windows-x86_64	js.exe')
+$txiki = (Resolve-Path '.\.txiki.js\txiki-windows-x86_64\tjs.exe')
 New-Item -ItemType Directory -Force build | Out-Null
-& $txiki bundle --minify --sourcemap=inline src\main.ts build	xiki-cli-lab.bundle.js
-$bundlePath = (Resolve-Path 'build	xiki-cli-lab.bundle.js')
+& $txiki bundle --minify --sourcemap=inline src\main.ts build\txiki-cli-lab.bundle.js
+$bundlePath = (Resolve-Path 'build\txiki-cli-lab.bundle.js')
 $bundle = [System.IO.File]::ReadAllText($bundlePath)
 $bundle = $bundle.Replace('__TXIKI_CLI_LAB_VERSION__', $env:APP_VERSION)
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($bundlePath, $bundle, $utf8NoBom)
-& $txiki compile build	xiki-cli-lab.bundle.js build	xiki-cli-lab
-.uild	xiki-cli-lab.exe info
+& $txiki compile build\txiki-cli-lab.bundle.js build\txiki-cli-lab
+.\build\txiki-cli-lab.exe info
 ```
 
 ### Linux
