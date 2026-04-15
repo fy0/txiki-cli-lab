@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>txiki-cli-lab ? tiny runtime, loud ideas</title>
+  <meta name="description" content="A GitHub Pages promo site for txiki-cli-lab: a tiny txiki.js CLI playground that ships cross-platform binaries and runs JS, TS, WASM, and local HTTP demos.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#hero" aria-label="txiki-cli-lab home">
+        <span class="brand-mark">t</span>
+        <span class="brand-text">txiki-cli-lab</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#story">Why it exists</a>
+        <a href="#capabilities">What it runs</a>
+        <a href="#release-loop">Release loop</a>
+        <a href="#commands">Command deck</a>
+      </nav>
+      <a class="topbar-cta" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer">Open repo</a>
+    </header>
+
+    <main>
+      <section class="hero reveal" id="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Tiny runtime. Release-first attitude.</p>
+          <h1>Ship a CLI playground that feels small, fast, and strangely powerful.</h1>
+          <p class="lede">
+            txiki-cli-lab is a compact txiki.js experiment that compiles into cross-platform binaries,
+            refreshes a rolling dev release on every push, and still gives you room to run JavaScript,
+            TypeScript, WASM, and tiny HTTP demos from one executable.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer">Browse releases</a>
+            <a class="button button-secondary" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer">Explore examples</a>
+          </div>
+          <ul class="hero-facts" aria-label="Project highlights">
+            <li><strong>3</strong><span>release targets</span></li>
+            <li><strong>1</strong><span>rolling dev tag</span></li>
+            <li><strong>JS ? TS ? WASM ? HTTP</strong><span>playground modes</span></li>
+          </ul>
+        </div>
+
+        <div class="hero-stage" aria-hidden="true">
+          <div class="signal-grid"></div>
+          <div class="terminal-window">
+            <div class="terminal-chrome">
+              <span></span><span></span><span></span>
+              <p>release-dev.log</p>
+            </div>
+            <div class="terminal-body">
+              <p><span class="prompt">$</span> txiki-cli-lab run-http examples/http-state.ts 0 demo-mode</p>
+              <p class="terminal-ok">Listening on http://127.0.0.1:3017/</p>
+              <p><span class="prompt">$</span> txiki-cli-lab run examples/hello.ts demo mode</p>
+              <p>{</p>
+              <p>&nbsp;&nbsp;"message": "hello from TypeScript",</p>
+              <p>&nbsp;&nbsp;"args": ["demo", "mode"]</p>
+              <p>}</p>
+              <p><span class="prompt">$</span> txiki-cli-lab run-wasm examples/answer.wasm</p>
+              <p class="terminal-accent">42</p>
+            </div>
+          </div>
+          <div class="floating-proof proof-left">
+            <span>main push</span>
+            <strong>refreshes dev</strong>
+          </div>
+          <div class="floating-proof proof-right">
+            <span>smoke tests</span>
+            <strong>guard the binary</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-grid reveal" id="story">
+        <article class="story-card">
+          <p class="story-step">Chapter 01</p>
+          <h2>CLI experiments usually die in folders.</h2>
+          <p>
+            A pile of scripts, a runtime that only works on your machine, and release notes that exist only in your head.
+            txiki-cli-lab turns that mess into a repeatable shipping loop.
+          </p>
+        </article>
+        <article class="story-card emphasis-card">
+          <p class="story-step">Chapter 02</p>
+          <h2>Every push becomes evidence.</h2>
+          <p>
+            The project builds Linux x64, Linux arm64, and Windows x64 binaries, updates a shared dev release,
+            and keeps a versioned path for tagged drops. Less ceremony, more proof.
+          </p>
+        </article>
+        <article class="story-card">
+          <p class="story-step">Chapter 03</p>
+          <h2>Play with scripts without abandoning binaries.</h2>
+          <p>
+            Run local JS, on-demand TypeScript, tiny WASM modules, and local HTTP demos from the same tool.
+            It feels like a release candidate and a toybox at the same time.
+          </p>
+        </article>
+      </section>
+
+      <section class="capabilities reveal" id="capabilities">
+        <div class="section-heading">
+          <p class="eyebrow">What it runs</p>
+          <h2>A tiny launcher with multiple personalities.</h2>
+        </div>
+        <div class="capability-grid">
+          <article class="capability-card accent-sky">
+            <h3>JavaScript first</h3>
+            <p>Run local .js and .mjs modules directly, with an injected runtime context for quick experiments.</p>
+            <code>txiki-cli-lab run examples/echo-context.js</code>
+          </article>
+          <article class="capability-card accent-sand">
+            <h3>TypeScript when available</h3>
+            <p>Use esbuild from PATH to transpile .ts and .mts on demand. If it is missing, the binary tells you exactly what to do.</p>
+            <code>txiki-cli-lab run examples/hello.ts demo mode</code>
+          </article>
+          <article class="capability-card accent-orange">
+            <h3>WASM with no theatrics</h3>
+            <p>Load a .wasm module directly or orchestrate it from JS. Great for proving tiny native-ish ideas without a full app shell.</p>
+            <code>txiki-cli-lab run-wasm examples/answer.wasm</code>
+          </article>
+          <article class="capability-card accent-ink">
+            <h3>Local HTTP demos</h3>
+            <p>Turn a script into a small web endpoint with one command. Useful for promo pages, fixtures, and tiny web toy servers.</p>
+            <code>txiki-cli-lab run-http examples/http-hello.js 3000</code>
+          </article>
+        </div>
+      </section>
+
+      <section class="release-loop reveal" id="release-loop">
+        <div class="section-heading compact">
+          <p class="eyebrow">Release loop</p>
+          <h2>One repo, two speeds.</h2>
+        </div>
+        <div class="timeline">
+          <article>
+            <span class="timeline-index">01</span>
+            <h3>Push to main</h3>
+            <p>Builds all targets, uploads workflow artifacts, and refreshes a shared <code>dev</code> prerelease tag.</p>
+          </article>
+          <article>
+            <span class="timeline-index">02</span>
+            <h3>Tag a version</h3>
+            <p>Uses the same build path, but promotes assets into a clean versioned release for keeps.</p>
+          </article>
+          <article>
+            <span class="timeline-index">03</span>
+            <h3>Ship proof, not promises</h3>
+            <p>The smoke suite validates command behavior before artifacts leave the workflow.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="command-deck reveal" id="commands">
+        <div class="section-heading compact">
+          <p class="eyebrow">Command deck</p>
+          <h2>Pick a lane. The binary already knows the drill.</h2>
+        </div>
+        <div class="command-layout">
+          <div class="command-tabs" role="tablist" aria-label="Command samples">
+            <button class="command-tab is-active" type="button" role="tab" aria-selected="true" data-panel="panel-run">run</button>
+            <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-http">run-http</button>
+            <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-wasm">run-wasm</button>
+            <button class="command-tab" type="button" role="tab" aria-selected="false" data-panel="panel-release">release</button>
+          </div>
+          <div class="command-panels">
+            <article class="command-panel is-active" id="panel-run" role="tabpanel">
+              <p class="panel-label">On-demand playground script</p>
+              <pre><code>txiki-cli-lab run examples/hello.ts demo mode
+{
+  "message": "hello from TypeScript",
+  "args": ["demo", "mode"]
+}</code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run examples/hello.ts demo mode">Copy command</button>
+            </article>
+            <article class="command-panel" id="panel-http" role="tabpanel" hidden>
+              <p class="panel-label">Tiny local web route</p>
+              <pre><code>txiki-cli-lab run-http examples/http-state.ts 0 demo-mode
+Listening on http://127.0.0.1:3017/
+{"command":"run-http","path":"/","args":["demo-mode"]}</code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-http examples/http-state.ts 0 demo-mode">Copy command</button>
+            </article>
+            <article class="command-panel" id="panel-wasm" role="tabpanel" hidden>
+              <p class="panel-label">Minimal wasm roundtrip</p>
+              <pre><code>txiki-cli-lab run-wasm examples/answer.wasm
+42</code></pre>
+              <button class="copy-button" type="button" data-copy="txiki-cli-lab run-wasm examples/answer.wasm">Copy command</button>
+            </article>
+            <article class="command-panel" id="panel-release" role="tabpanel" hidden>
+              <p class="panel-label">Release evidence</p>
+              <pre><code>push -> main
+  ? build linux-x64 / linux-arm64 / windows-x64
+  ? update shared dev release
+
+push -> v0.1.0
+  ? build same matrix
+  ? publish versioned GitHub Release</code></pre>
+              <button class="copy-button" type="button" data-copy="git push origin main">Copy command</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="proof-strip reveal" aria-label="Credibility markers">
+        <div>
+          <span class="proof-label">Packaging</span>
+          <strong>Linux x64 ? Linux arm64 ? Windows x64</strong>
+        </div>
+        <div>
+          <span class="proof-label">Runtime</span>
+          <strong>txiki.js + JS + TS + WASM + local HTTP</strong>
+        </div>
+        <div>
+          <span class="proof-label">Workflow</span>
+          <strong>Rolling dev release + tag releases</strong>
+        </div>
+      </section>
+
+      <section class="final-cta reveal" id="cta">
+        <div class="section-heading compact light">
+          <p class="eyebrow">Ready to poke it?</p>
+          <h2>Open the repo, grab a build, then make it do something weird.</h2>
+          <p>
+            The page is static. The binary is not. Start with the examples, then mutate the runtime in public.
+          </p>
+        </div>
+        <div class="hero-actions centered">
+          <a class="button button-primary" href="https://github.com/fy0/txiki-cli-lab" target="_blank" rel="noreferrer">GitHub repository</a>
+          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/releases" target="_blank" rel="noreferrer">Releases</a>
+          <a class="button button-secondary inverse" href="https://github.com/fy0/txiki-cli-lab/blob/main/examples/index.md" target="_blank" rel="noreferrer">Examples index</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

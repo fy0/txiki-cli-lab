@@ -7,6 +7,8 @@ The goal is to prove a simple cross-platform release flow for:
 - Linux arm64 (`tar.gz`)
 - Windows x64 (`zip`)
 
+Live promo page (after the Pages workflow deploys): https://fy0.github.io/txiki-cli-lab/
+
 This repository intentionally stays small:
 - TypeScript source with no npm dependency tree
 - `tjs bundle` + `tjs compile` for the final executable
