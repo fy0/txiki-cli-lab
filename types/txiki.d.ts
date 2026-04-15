@@ -31,6 +31,12 @@ declare global {
             listenIp?: string;
         }
 
+        interface Server {
+            readonly port: number;
+            readonly closed: Promise<void>;
+            close(): void;
+        }
+
         interface MakeDirOptions {
             recursive?: boolean;
         }
@@ -49,9 +55,10 @@ declare global {
         }
 
         interface Process {
+            kill(signal?: string): void;
             wait(): Promise<ProcessStatus>;
-            stdout: ProcessReadableStream | null;
-            stderr: ProcessReadableStream | null;
+            stdout: ReadableStream<Uint8Array> & ProcessReadableStream | null;
+            stderr: ReadableStream<Uint8Array> & ProcessReadableStream | null;
         }
 
         interface ProcessOptions {
@@ -64,7 +71,7 @@ declare global {
         function remove(path: string, options?: RemoveOptions): Promise<void>;
         function spawn(args: string | string[], options?: ProcessOptions): Process;
         function stat(path: string): Promise<StatResult>;
-        function serve(options: ServeOptions): { readonly port: number; close(): void };
+        function serve(options: ServeOptions): Server;
         function exit(code: number): never;
     }
 
@@ -82,7 +89,7 @@ declare global {
     }
 
     interface TxikiCliLabContext {
-        readonly command: 'run';
+        readonly command: 'run' | 'run-http';
         readonly file: string;
         readonly cwd: string;
         readonly args: readonly string[];

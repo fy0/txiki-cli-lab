@@ -67,6 +67,32 @@ ${result.stderr}`);
     }
 }
 
+async function waitForListeningUrl(proc) {
+    if (!proc.stdout) {
+        throw new Error('expected stdout pipe for server process');
+    }
+
+    const reader = proc.stdout.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+            throw new Error(`server exited before announcing a URL: ${buffer}`);
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const match = buffer.match(/Listening on (http:\/\/[^\s]+)/);
+
+        if (match) {
+            reader.releaseLock();
+            return match[1];
+        }
+    }
+}
+
 async function main() {
     const args = normalizeArgs(tjs.args, import.meta.path);
     const [ binaryArg, expectedVersion = '0.0.0-dev' ] = args;
@@ -158,6 +184,25 @@ async function main() {
     const wasmResult = await runProcess([ binaryPath, 'run-wasm', path.join('fixtures', 'answer.wasm') ]);
     assert(wasmResult.code === 0, `run-wasm command failed: ${wasmResult.stderr}`);
     assert(wasmResult.stdout.trim() === '42', 'run-wasm output mismatch');
+
+    const httpProc = tjs.spawn([
+        binaryPath,
+        'run-http',
+        path.join('examples', 'http-hello.js'),
+        '0',
+        'smoke-server',
+    ], { stdout: 'pipe', stderr: 'pipe' });
+    const httpStderr = httpProc.stderr ? httpProc.stderr.text() : Promise.resolve('');
+    const httpUrl = await waitForListeningUrl(httpProc);
+    const httpResponse = await fetch(httpUrl);
+    const httpBody = await httpResponse.text();
+    assert(httpResponse.status === 200, 'run-http status mismatch');
+    assert(httpBody.includes('smoke-server'), 'run-http body mismatch');
+    httpProc.kill('SIGTERM');
+    const httpStatus = await httpProc.wait();
+    const httpErrors = await httpStderr;
+    assert(httpStatus.exit_status === 0 || httpStatus.term_signal !== null, 'run-http exit mismatch');
+    assert(httpErrors.trim() === '', `run-http stderr mismatch: ${httpErrors}`);
 
     const missingFileResult = await runProcess([ binaryPath, 'sha256', 'does-not-exist.txt' ]);
     assert(missingFileResult.code !== 0, 'missing file should fail');

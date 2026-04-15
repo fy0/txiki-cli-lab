@@ -2,6 +2,7 @@ import path from 'tjs:path';
 
 import { runFetchCommand } from './commands/fetch.ts';
 import { runInfoCommand } from './commands/info.ts';
+import { runHttpCommand } from './commands/run-http.ts';
 import { runScriptCommand } from './commands/run.ts';
 import { runWasmCommand } from './commands/run-wasm.ts';
 import { runSha256Command } from './commands/sha256.ts';
@@ -15,8 +16,9 @@ Commands:
   info                 Print runtime and host information as JSON
   sha256 <file>        Print the SHA-256 digest for a file as JSON
   fetch <url>          Fetch a URL and print a response summary as JSON
-  run <file.js|file.ts> Run a local script; TypeScript needs esbuild in PATH
-  run-wasm <file.wasm> Run a local wasm module
+  run <file.js|file.ts>      Run a local script; TypeScript needs esbuild in PATH
+  run-http <file.js|file.ts> Start a local HTTP demo script
+  run-wasm <file.wasm>       Run a local wasm module
 
 Options:
   -h, --help           Show help
@@ -81,6 +83,9 @@ async function main(): Promise<void> {
             return;
         case 'run':
             await runScriptCommand(rest);
+            return;
+        case 'run-http':
+            await runHttpCommand(rest);
             return;
         case 'run-wasm':
             await runWasmCommand(rest);

@@ -19,6 +19,7 @@ txiki-cli-lab info
 txiki-cli-lab sha256 <file>
 txiki-cli-lab fetch <url>
 txiki-cli-lab run <file.js|file.ts> [args...]
+txiki-cli-lab run-http <file.js|file.ts> [port] [args...]
 txiki-cli-lab run-wasm <file.wasm> [args...]
 txiki-cli-lab --help
 txiki-cli-lab --version
@@ -32,6 +33,7 @@ txiki-cli-lab sha256 fixtures/sample.txt
 txiki-cli-lab fetch http://127.0.0.1:8080/sample.txt
 txiki-cli-lab run fixtures/run-script.js alpha beta
 txiki-cli-lab run fixtures/run-typescript.ts alpha beta
+txiki-cli-lab run-http examples/http-hello.js 3000
 txiki-cli-lab run-wasm fixtures/answer.wasm
 ```
 
@@ -42,7 +44,9 @@ txiki-cli-lab run-wasm fixtures/answer.wasm
 - `.ts` and `.mts` are transpiled on demand if `esbuild` is available on `PATH`.
 - If `esbuild` is missing, the command prints a one-line install hint instead of silently failing.
 - The launched script can inspect `globalThis.txikiCliLab` for the injected command context.
+- `run-http <file.js|file.ts> [port] [args...]` starts a local HTTP handler script.
 - `run-wasm <file.wasm> [args...]` runs a local wasm file.
+- Extra arguments are forwarded to HTTP scripts through `globalThis.txikiCliLab.args`.
 - Extra arguments are forwarded to WASI modules; simple exported `main()` or `_start()` wasm modules also work.
 
 ## Demo scripts
@@ -56,6 +60,10 @@ txiki-cli-lab run examples/fetch-summary.js https://example.com
 txiki-cli-lab run examples/hello.ts demo mode
 txiki-cli-lab run examples/wasm-demo.js examples/answer.wasm
 ```
+
+## Demo index
+
+- See `examples/index.md` for the full list of bundled demos.
 
 ## Local development
 
