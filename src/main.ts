@@ -15,7 +15,7 @@ Commands:
   info                 Print runtime and host information as JSON
   sha256 <file>        Print the SHA-256 digest for a file as JSON
   fetch <url>          Fetch a URL and print a response summary as JSON
-  run <file.js>        Run a local .js/.mjs module with extra args
+  run <file.js|file.ts> Run a local script; TypeScript needs esbuild in PATH
   run-wasm <file.wasm> Run a local wasm module
 
 Options:

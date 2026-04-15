@@ -90,6 +90,7 @@ jobs:
           mkdir -p dist/package
           cp build/${APP_NAME} dist/package/${APP_NAME}
           cp README.md LICENSE dist/package/
+          cp -R examples dist/package/examples
           tar -C dist/package -czf "dist/${ARCHIVE_NAME}" .
 
       - name: Verify packaged archive
@@ -174,6 +175,7 @@ jobs:
           New-Item -ItemType Directory -Force 'dist\package' | Out-Null
           Copy-Item 'build\txiki-cli-lab.exe' 'dist\package\txiki-cli-lab.exe'
           Copy-Item 'README.md', 'LICENSE' 'dist\package'
+          Copy-Item 'examples' 'dist\package\examples' -Recurse
           Compress-Archive -Path 'dist\package\*' -DestinationPath "dist\$env:ARCHIVE_NAME"
 
       - name: Verify packaged archive

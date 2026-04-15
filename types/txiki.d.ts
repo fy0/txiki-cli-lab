@@ -5,6 +5,7 @@ declare global {
         const exePath: string;
         const hostName: string;
         const pid: number;
+        const tmpDir: string;
         const version: string;
 
         namespace engine {
@@ -30,7 +31,38 @@ declare global {
             listenIp?: string;
         }
 
+        interface MakeDirOptions {
+            recursive?: boolean;
+        }
+
+        interface RemoveOptions {
+            recursive?: boolean;
+        }
+
+        interface ProcessStatus {
+            exit_status: number | null;
+            term_signal: string | null;
+        }
+
+        interface ProcessReadableStream {
+            text(): Promise<string>;
+        }
+
+        interface Process {
+            wait(): Promise<ProcessStatus>;
+            stdout: ProcessReadableStream | null;
+            stderr: ProcessReadableStream | null;
+        }
+
+        interface ProcessOptions {
+            stdout?: 'pipe' | 'ignore';
+            stderr?: 'pipe' | 'ignore';
+        }
+
+        function makeDir(path: string, options?: MakeDirOptions): Promise<void>;
         function readFile(path: string): Promise<Uint8Array>;
+        function remove(path: string, options?: RemoveOptions): Promise<void>;
+        function spawn(args: string | string[], options?: ProcessOptions): Process;
         function stat(path: string): Promise<StatResult>;
         function serve(options: ServeOptions): { readonly port: number; close(): void };
         function exit(code: number): never;

@@ -136,6 +136,25 @@ async function main() {
     assert(Array.isArray(scriptJson.args), 'run script args missing');
     assert(scriptJson.args.join(',') === 'alpha,beta', 'run script args mismatch');
 
+    const typescriptResult = await runProcess([
+        binaryPath,
+        'run',
+        path.join('fixtures', 'run-typescript.ts'),
+        'gamma',
+        'delta',
+    ]);
+    if (typescriptResult.code === 0) {
+        const typescriptJson = JSON.parse(typescriptResult.stdout);
+        assert(typescriptJson.file === 'run-typescript.ts', 'run typescript file mismatch');
+        assert(typescriptJson.total === 2, 'run typescript total mismatch');
+        assert(typescriptJson.label === 'ts:gamma|delta', 'run typescript label mismatch');
+    } else {
+        assert(
+            typescriptResult.stderr.includes('Install esbuild and retry'),
+            'typescript fallback hint mismatch',
+        );
+    }
+
     const wasmResult = await runProcess([ binaryPath, 'run-wasm', path.join('fixtures', 'answer.wasm') ]);
     assert(wasmResult.code === 0, `run-wasm command failed: ${wasmResult.stderr}`);
     assert(wasmResult.stdout.trim() === '42', 'run-wasm output mismatch');

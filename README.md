@@ -18,7 +18,7 @@ This repository intentionally stays small:
 txiki-cli-lab info
 txiki-cli-lab sha256 <file>
 txiki-cli-lab fetch <url>
-txiki-cli-lab run <file.js> [args...]
+txiki-cli-lab run <file.js|file.ts> [args...]
 txiki-cli-lab run-wasm <file.wasm> [args...]
 txiki-cli-lab --help
 txiki-cli-lab --version
@@ -31,18 +31,33 @@ txiki-cli-lab info
 txiki-cli-lab sha256 fixtures/sample.txt
 txiki-cli-lab fetch http://127.0.0.1:8080/sample.txt
 txiki-cli-lab run fixtures/run-script.js alpha beta
+txiki-cli-lab run fixtures/run-typescript.ts alpha beta
 txiki-cli-lab run-wasm fixtures/answer.wasm
 ```
 
-## Local development
+## Playground commands
 
-
-### Extra playground commands
-
-- `run <file.js> [args...]` executes a local `.js` or `.mjs` module.
+- `run <file.js|file.ts> [args...]` executes a local `.js`, `.mjs`, `.ts`, or `.mts` module.
+- `.js` and `.mjs` run directly.
+- `.ts` and `.mts` are transpiled on demand if `esbuild` is available on `PATH`.
+- If `esbuild` is missing, the command prints a one-line install hint instead of silently failing.
 - The launched script can inspect `globalThis.txikiCliLab` for the injected command context.
 - `run-wasm <file.wasm> [args...]` runs a local wasm file.
-- Extra arguments are forwarded to WASI modules; simple exported `main()` wasm modules also work.
+- Extra arguments are forwarded to WASI modules; simple exported `main()` or `_start()` wasm modules also work.
+
+## Demo scripts
+
+The `examples/` directory is included in the repository and in release archives.
+
+```bash
+txiki-cli-lab run examples/echo-context.js
+txiki-cli-lab run examples/file-peek.js README.md
+txiki-cli-lab run examples/fetch-summary.js https://example.com
+txiki-cli-lab run examples/hello.ts demo mode
+txiki-cli-lab run examples/wasm-demo.js examples/answer.wasm
+```
+
+## Local development
 
 The source is regular TypeScript, but the build uses txiki.js directly.
 No `package.json` is required.
@@ -57,16 +72,16 @@ Build manually from PowerShell:
 
 ```powershell
 $env:APP_VERSION = '0.0.0-dev'
-$txiki = (Resolve-Path '.\.txiki.js\txiki-windows-x86_64\tjs.exe')
+$txiki = (Resolve-Path '.\.txiki.js	xiki-windows-x86_64	js.exe')
 New-Item -ItemType Directory -Force build | Out-Null
-& $txiki bundle --minify --sourcemap=inline src\main.ts build\txiki-cli-lab.bundle.js
-$bundlePath = (Resolve-Path 'build\txiki-cli-lab.bundle.js')
+& $txiki bundle --minify --sourcemap=inline src\main.ts build	xiki-cli-lab.bundle.js
+$bundlePath = (Resolve-Path 'build	xiki-cli-lab.bundle.js')
 $bundle = [System.IO.File]::ReadAllText($bundlePath)
 $bundle = $bundle.Replace('__TXIKI_CLI_LAB_VERSION__', $env:APP_VERSION)
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($bundlePath, $bundle, $utf8NoBom)
-& $txiki compile build\txiki-cli-lab.bundle.js build\txiki-cli-lab
-.\build\txiki-cli-lab.exe info
+& $txiki compile build	xiki-cli-lab.bundle.js build	xiki-cli-lab
+.uild	xiki-cli-lab.exe info
 ```
 
 ### Linux
@@ -84,7 +99,8 @@ from pathlib import Path
 p = Path('build/txiki-cli-lab.bundle.js')
 p.write_text(
     p.read_text().replace('__TXIKI_CLI_LAB_VERSION__', '0.0.0-dev'),
-    newline='\n',
+    newline='
+',
 )
 PY
 ./tjs compile build/txiki-cli-lab.bundle.js build/txiki-cli-lab
@@ -96,7 +112,7 @@ PY
 After building, run the repository smoke test with the runtime you used for the build:
 
 ```powershell
-& $txiki run scripts\smoke.js build\txiki-cli-lab.exe 0.0.0-dev
+& $txiki run scripts\smoke.js build	xiki-cli-lab.exe 0.0.0-dev
 ```
 
 ```bash
@@ -113,6 +129,7 @@ Archives contain:
 - the compiled executable
 - `README.md`
 - `LICENSE`
+- `examples/`
 
 ## Notes
 
