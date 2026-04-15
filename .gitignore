@@ -1,0 +1,5 @@
+build/
+dist/
+.txiki.js/
+*.zip
+*.tar.gz

@@ -1,0 +1,207 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  APP_NAME: txiki-cli-lab
+  TJS_VERSION: v26.4.0
+
+jobs:
+  build-linux:
+    name: Build Linux (${{ matrix.target }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: linux-x64
+          - runner: ubuntu-24.04-arm
+            target: linux-arm64
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Resolve release metadata
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            version="${GITHUB_REF_NAME}"
+          else
+            version="dev-${GITHUB_SHA::7}"
+          fi
+
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+          echo "ARCHIVE_NAME=${APP_NAME}-${version}-${{ matrix.target }}.tar.gz" >> "$GITHUB_ENV"
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libffi-dev
+
+      - name: Build txiki.js
+        shell: bash
+        run: |
+          git clone --branch "${TJS_VERSION}" --depth 1 --recurse-submodules --shallow-submodules https://github.com/saghul/txiki.js.git .txiki.js
+          make -C .txiki.js
+          ./.txiki.js/build/tjs bundle ./.txiki.js/tests/helpers/bundle-input.js /tmp/tjs-warmup.js
+          rm -f /tmp/tjs-warmup.js
+
+      - name: Build CLI
+        shell: bash
+        run: |
+          mkdir -p build
+          ./.txiki.js/build/tjs bundle --minify --sourcemap=inline src/main.ts build/${APP_NAME}.bundle.js
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          bundle_path = Path('build') / f"{os.environ['APP_NAME']}.bundle.js"
+          token = '__TXIKI_CLI_LAB_VERSION__'
+          version = os.environ['VERSION']
+          text = bundle_path.read_text(encoding='utf-8')
+          if token not in text:
+              raise SystemExit(f'version token not found in {bundle_path}')
+          bundle_path.write_text(text.replace(token, version), encoding='utf-8', newline='\n')
+          PY
+          ./.txiki.js/build/tjs compile build/${APP_NAME}.bundle.js build/${APP_NAME}
+
+      - name: Smoke test binary
+        shell: bash
+        run: ./.txiki.js/build/tjs run scripts/smoke.js build/${APP_NAME} "${VERSION}"
+
+      - name: Package archive
+        shell: bash
+        run: |
+          rm -rf dist
+          mkdir -p dist/package
+          cp build/${APP_NAME} dist/package/${APP_NAME}
+          cp README.md LICENSE dist/package/
+          tar -C dist/package -czf "dist/${ARCHIVE_NAME}" .
+
+      - name: Verify packaged archive
+        shell: bash
+        run: |
+          rm -rf dist/unpack
+          mkdir -p dist/unpack
+          tar -C dist/unpack -xzf "dist/${ARCHIVE_NAME}"
+          version_out="$(./dist/unpack/${APP_NAME} --version)"
+          [[ "${version_out}" == "${APP_NAME} ${VERSION}" ]]
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: txiki-cli-lab-${{ matrix.target }}
+          path: dist/*.tar.gz
+
+  build-windows:
+    name: Build Windows (windows-x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Resolve release metadata
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            $version = $env:GITHUB_REF_NAME
+          } else {
+            $version = "dev-$($env:GITHUB_SHA.Substring(0, 7))"
+          }
+
+          "VERSION=$version" >> $env:GITHUB_ENV
+          "ARCHIVE_NAME=$env:APP_NAME-$version-windows-x64.zip" >> $env:GITHUB_ENV
+
+      - name: Download txiki.js
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/saghul/txiki.js/releases/download/$env:TJS_VERSION/txiki-windows-x86_64.zip" -OutFile 'txiki.zip'
+          Expand-Archive -Path 'txiki.zip' -DestinationPath '.txiki.js'
+          $txikiBin = '.\.txiki.js\txiki-windows-x86_64\tjs.exe'
+          if (-not (Test-Path $txikiBin)) {
+            throw 'tjs.exe not found after extraction.'
+          }
+
+          "TXIKI_BIN=$txikiBin" >> $env:GITHUB_ENV
+
+      - name: Build CLI
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build | Out-Null
+          & $env:TXIKI_BIN bundle --minify --sourcemap=inline src/main.ts build\txiki-cli-lab.bundle.js
+          $bundlePath = (Resolve-Path 'build\txiki-cli-lab.bundle.js')
+          $bundle = [System.IO.File]::ReadAllText($bundlePath)
+          if (-not $bundle.Contains('__TXIKI_CLI_LAB_VERSION__')) {
+            throw 'Version token not found.'
+          }
+
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          $bundle = $bundle.Replace('__TXIKI_CLI_LAB_VERSION__', $env:VERSION)
+          [System.IO.File]::WriteAllText($bundlePath, $bundle, $utf8NoBom)
+          & $env:TXIKI_BIN compile build\txiki-cli-lab.bundle.js build\txiki-cli-lab
+
+          if (-not (Test-Path 'build\txiki-cli-lab.exe')) {
+            throw 'Compiled executable not found.'
+          }
+
+      - name: Smoke test binary
+        shell: pwsh
+        run: |
+          & $env:TXIKI_BIN run scripts\smoke.js build\txiki-cli-lab.exe $env:VERSION
+
+      - name: Package archive
+        shell: pwsh
+        run: |
+          if (Test-Path 'dist') {
+            Remove-Item 'dist' -Recurse -Force
+          }
+
+          New-Item -ItemType Directory -Force 'dist\package' | Out-Null
+          Copy-Item 'build\txiki-cli-lab.exe' 'dist\package\txiki-cli-lab.exe'
+          Copy-Item 'README.md', 'LICENSE' 'dist\package'
+          Compress-Archive -Path 'dist\package\*' -DestinationPath "dist\$env:ARCHIVE_NAME"
+
+      - name: Verify packaged archive
+        shell: pwsh
+        run: |
+          if (Test-Path 'dist\unpack') {
+            Remove-Item 'dist\unpack' -Recurse -Force
+          }
+
+          Expand-Archive -Path "dist\$env:ARCHIVE_NAME" -DestinationPath 'dist\unpack'
+          $versionOut = & .\dist\unpack\txiki-cli-lab.exe --version
+          if ($versionOut.Trim() -ne "$env:APP_NAME $env:VERSION") {
+            throw "Unexpected version output: $versionOut"
+          }
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: txiki-cli-lab-windows-x64
+          path: dist/*.zip
+
+  release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - build-linux
+      - build-windows
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+          pattern: txiki-cli-lab-*
+          merge-multiple: true
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

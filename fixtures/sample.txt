@@ -1,0 +1,2 @@
+txiki-cli-lab fixture
+A small file used by the smoke tests.
