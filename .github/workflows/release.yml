@@ -203,6 +203,8 @@ jobs:
       - build-windows
     permissions:
       contents: write
+    env:
+      GH_REPO: ${{ github.repository }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v8
